@@ -1,7 +1,7 @@
 # task-FabricaResheniy
 
-1. Создайте файл .env в корне проекта
-    Пример:
+1. Создайте файл .env в корне проекта \n
+    Пример:\n
         DEBUG=1
         SECRET_KEY= Secret Key
         DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1] 0.0.0.0

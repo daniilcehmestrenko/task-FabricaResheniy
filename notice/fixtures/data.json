@@ -1,0 +1,302 @@
+[
+{
+  "model": "notice.client",
+  "pk": 1,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 2,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 3,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 4,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 5,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 6,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 7,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 8,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 9,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 10,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#mts",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 11,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 12,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 13,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 14,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 15,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 16,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 17,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 18,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 19,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 20,
+  "fields": {
+    "phone": "79172414133",
+    "code": "7",
+    "tag": "#beeline",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 21,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 22,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 23,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 24,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 25,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 26,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 27,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 28,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 29,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+},
+{
+  "model": "notice.client",
+  "pk": 30,
+  "fields": {
+    "phone": "79172414134",
+    "code": "7",
+    "tag": "#yota",
+    "timezone": "UTC+00"
+  }
+}
+]

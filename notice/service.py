@@ -1,31 +1,35 @@
-import requests
-from requests.exceptions import Timeout
-from django.conf import settings
-from rest_framework import status
+from django.utils import timezone
+from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
-def send_message(text: str, phone: int, pk: int) -> bool:
-    URL_SEND_API = settings.URL_SEND_API
-    HEADERS = {
-        "Authorization": "Bearer " + settings.TOKEN
-    }
-    status_message = None
-    message = {
-        "id": pk,
-        "phone": phone,
-        "text": text
-    }
-    try:
-        response = requests.post(
-            url=f'{URL_SEND_API}/send/{pk}',
-            headers=HEADERS,
-            json=message,
-            timeout=1
+from .tasks import start_mailinglist
+from .models import MailingList
+
+
+class MailingListService:
+    def __init__(self, mailinglist_pk) -> None:
+        self.mailinglist = self.__get_mailinglist(mailinglist_pk)
+
+    def start_or_delay(self):
+        if timezone.now() > self.mailinglist.dttm_start:
+            start_mailinglist.delay(self.mailinglist.pk)
+        else:
+            self.__create_delay_task(self.mailinglist.pk)
+
+    def __get_mailinglist(self, pk: int) -> MailingList | None:
+        return MailingList.objects.filter(pk=pk).first()
+
+    def __create_delay_task(self) -> None:
+        crontab = CrontabSchedule.objects.create(
+            minute=self.mailinglist.dttm_start.strftime('%M'),
+            hour=self.mailinglist.dttm_start.strftime('%H'),
+            day_of_month=self.mailinglist.dttm_start.strftime('%d'),
+            month_of_year=self.mailinglist.dttm_start.strftime('%m'),
         )
-    except Timeout:
-        return False
-
-    if response.status_code == status.HTTP_200_OK:
-        data = response.json()
-        status_message = data.get('message')
-
-    return status_message == settings.SUCCESS_SEND
+        PeriodicTask.objects.create(
+            crontab=crontab,
+            name=f'Mailinglist {self.mailinglist.pk}',
+            task='notice.tasks.start_mailinglist',
+            one_off=True,
+            args=[self.mailinglist.pk],
+            start_time=self.mailinglist.dttm_start
+        )

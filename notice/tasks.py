@@ -4,7 +4,7 @@ from django.utils import timezone
 from celery import shared_task
 
 from .models import MailingList, Client, Message
-from .service import send_message
+from .utils import send_message
 
 
 @shared_task
@@ -27,4 +27,6 @@ def start_mailinglist(pk: int):
                     mailinglist_id=mailinglist.pk,
                     client_id=client.pk
                 ))
+            else:
+                break
         Message.objects.bulk_create(messages)

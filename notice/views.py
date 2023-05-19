@@ -1,15 +1,35 @@
-from django.db.models import Count, F, Q
+from django.db.models import Count, Q, F
 
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from .serializers import MailingListSerializer, ClientSerializer
+from .serializers import (
+    MailingListSerializer,
+    ClientSerializer,
+)
 from .models import MailingList, Client
+from .service import MailingListService
 
 class MailingListViewSet(ModelViewSet):
     serializer_class = MailingListSerializer
     queryset = MailingList.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        service = MailingListService(serializer.data.get('id'))
+        service.start_or_delay()
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
 
 class ClientViewSet(ModelViewSet):
@@ -20,8 +40,7 @@ class ClientViewSet(ModelViewSet):
 class MailingListStatViewSet(ViewSet):
     def retrieve(self, request: Request, pk: int):
         data = (
-            MailingList.objects.prefetch_related('messages')
-                .filter(pk=pk)
+            MailingList.objects.filter(pk=pk)
                 .annotate(
                     count_message=Count('messages'),
                     count_sent_messages=Count(
@@ -33,37 +52,25 @@ class MailingListStatViewSet(ViewSet):
                         filter=Q(messages__status=False)
                     )
                 )
-                .values(
-                    pk=F('pk'),
-                    message_text=F('text'),
-                    start_date=F('dttm_start'),
-                    end_date=F('dttm_end'),
-                    filter=F('client_filter'),
-                    count_all_message=F('count_message'),
-                    count_sent_messages=F('count_sent_messages'),
-                    count_not_sent_messages=F('count_not_sent_messages'),
-                )
+                .values()
         )
+
         return Response(data)
 
     def list(self, request: Request):
-        malinglist_stats = (
+        data = (
             MailingList.objects.prefetch_related('messages')
                 .values('messages__status')
                 .annotate(
                     count_message=Count('messages'),
+                    status_message=F('messages__status')
                 )
-                .values(
-                    pk=F('pk'),
-                    mailing_text=F('text'),
-                    count_mess=F('count_message'),
-                    status_message=F('messages__status'),
-                    client_filter=F('client_filter')
-                )
+                .values()
         )
         count_mailinglist = MailingList.objects.all().count()
         data = {
-            "mailinglist_stats": malinglist_stats,
+            "mailinglist_stats": data,
             "count_mailinglist": count_mailinglist
         }
+
         return Response(data)

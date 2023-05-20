@@ -1,4 +1,5 @@
 from django.db.models import Count, Q, F
+from django.db import transaction
 
 from rest_framework import status
 from rest_framework.response import Response
@@ -25,8 +26,10 @@ class MailingListViewSet(ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        service = MailingListService(serializer.data.get('id'))
-        service.start_or_delay()
+        service = MailingListService()
+        transaction.on_commit(
+            lambda: service.start_or_delay(serializer.data.get('id'))
+        )
 
         return Response(
             serializer.data,

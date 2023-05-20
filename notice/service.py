@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.db import transaction
 from django_celery_beat.models import PeriodicTask, CrontabSchedule
 
 from .tasks import start_mailinglist
@@ -6,30 +7,31 @@ from .models import MailingList
 
 
 class MailingListService:
-    def __init__(self, mailinglist_pk: int) -> None:
-        self.mailinglist = self.__get_mailinglist(mailinglist_pk)
+    def start_or_delay(self, pk: int):
+        mailinglist = self.__get_mailinglist(pk)
 
-    def start_or_delay(self):
-        if timezone.now() > self.mailinglist.dttm_start:
-            start_mailinglist.delay(self.mailinglist.pk)
-        else:
-            self.__create_delay_task()
+        if mailinglist:
+            if timezone.now() > mailinglist.dttm_start:
+                start_mailinglist.delay(mailinglist.pk)
+            else:
+                self.__create_delay_task(mailinglist)
 
     def __get_mailinglist(self, pk: int) -> MailingList | None:
         return MailingList.objects.filter(pk=pk).first()
 
-    def __create_delay_task(self) -> None:
-        crontab = CrontabSchedule.objects.create(
-            minute=self.mailinglist.dttm_start.strftime('%M'),
-            hour=self.mailinglist.dttm_start.strftime('%H'),
-            day_of_month=self.mailinglist.dttm_start.strftime('%d'),
-            month_of_year=self.mailinglist.dttm_start.strftime('%m'),
-        )
-        PeriodicTask.objects.create(
-            crontab=crontab,
-            name=f'Mailinglist {self.mailinglist.pk}',
-            task='notice.tasks.start_mailinglist',
-            one_off=True,
-            args=[self.mailinglist.pk],
-            start_time=self.mailinglist.dttm_start
-        )
+    def __create_delay_task(self, mailinglist: MailingList) -> None:
+        with transaction.atomic():
+            crontab = CrontabSchedule.objects.create(
+                minute=mailinglist.dttm_start.strftime('%M'),
+                hour=mailinglist.dttm_start.strftime('%H'),
+                day_of_month=mailinglist.dttm_start.strftime('%d'),
+                month_of_year=mailinglist.dttm_start.strftime('%m'),
+            )
+            PeriodicTask.objects.create(
+                crontab=crontab,
+                name=f'Mailinglist {mailinglist.pk}',
+                task='notice.tasks.start_mailinglist',
+                one_off=True,
+                args=[mailinglist.pk],
+                start_time=mailinglist.dttm_start
+            )

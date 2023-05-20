@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.utils import timezone
+from django.db import transaction
 
 from celery import shared_task
 
@@ -29,4 +30,6 @@ def start_mailinglist(pk: int):
                 ))
             else:
                 break
-        Message.objects.bulk_create(messages)
+
+        with transaction.atomic():
+            Message.objects.bulk_create(messages)

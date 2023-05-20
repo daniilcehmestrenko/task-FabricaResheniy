@@ -44,6 +44,8 @@ class ClientViewSet(ModelViewSet):
 
 
 class MailingListStatViewSet(ViewSet):
+    
+    @transaction.non_atomic_requests
     def retrieve(self, request: Request, pk: int):
         queryset = (
             MailingList.objects.filter(pk=pk)
@@ -63,6 +65,7 @@ class MailingListStatViewSet(ViewSet):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @transaction.non_atomic_requests
     def list(self, request: Request):
         queryset = (
             MailingList.objects.values('messages__status')

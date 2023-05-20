@@ -1,6 +1,4 @@
 from django.db.models import Q
-from django.utils import timezone
-from django.db import transaction
 
 from concurrent.futures import ThreadPoolExecutor
 from celery import shared_task
@@ -29,25 +27,8 @@ def start_mailinglist(pk: int):
                 for client in clients
             ]
             results = pool.map(send_message, data)
-
             for result in results:
                 if result:
                     messages.append(result)
 
-        # for client in clients:
-        #     if timezone.now() < mailinglist.dttm_end:
-        #         status = send_message(
-        #             phone=client.phone,
-        #             text=mailinglist.text,
-        #             pk=client.pk
-        #         )
-        #         messages.append(Message(
-        #             status=status,
-        #             mailinglist_id=mailinglist.pk,
-        #             client_id=client.pk
-        #         ))
-        #     else:
-        #         break
-
-        with transaction.atomic():
-            Message.objects.bulk_create(messages)
+        Message.objects.bulk_create(messages)

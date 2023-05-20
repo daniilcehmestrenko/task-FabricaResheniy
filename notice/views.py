@@ -62,8 +62,7 @@ class MailingListStatViewSet(ViewSet):
 
     def list(self, request: Request):
         queryset = (
-            MailingList.objects.prefetch_related('messages')
-                .values('messages__status')
+            MailingList.objects.values('messages__status')
                 .annotate(
                     count_message=Count('messages'),
                     status_message=F('messages__status')

@@ -6,14 +6,14 @@ from .models import MailingList
 
 
 class MailingListService:
-    def __init__(self, mailinglist_pk) -> None:
+    def __init__(self, mailinglist_pk: int) -> None:
         self.mailinglist = self.__get_mailinglist(mailinglist_pk)
 
     def start_or_delay(self):
         if timezone.now() > self.mailinglist.dttm_start:
             start_mailinglist.delay(self.mailinglist.pk)
         else:
-            self.__create_delay_task(self.mailinglist.pk)
+            self.__create_delay_task()
 
     def __get_mailinglist(self, pk: int) -> MailingList | None:
         return MailingList.objects.filter(pk=pk).first()

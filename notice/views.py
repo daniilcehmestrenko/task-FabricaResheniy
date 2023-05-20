@@ -7,6 +7,8 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from .serializers import (
     MailingListSerializer,
+    MailingListStatDetailSerializer,
+    MailingListStatSerializer,
     ClientSerializer,
 )
 from .models import MailingList, Client
@@ -16,7 +18,7 @@ class MailingListViewSet(ModelViewSet):
     serializer_class = MailingListSerializer
     queryset = MailingList.objects.all()
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -39,7 +41,7 @@ class ClientViewSet(ModelViewSet):
 
 class MailingListStatViewSet(ViewSet):
     def retrieve(self, request: Request, pk: int):
-        data = (
+        queryset = (
             MailingList.objects.filter(pk=pk)
                 .annotate(
                     count_message=Count('messages'),
@@ -52,10 +54,10 @@ class MailingListStatViewSet(ViewSet):
                         filter=Q(messages__status=False)
                     )
                 )
-                .values()
         )
+        serializer = MailingListStatDetailSerializer(queryset, many=True)
 
-        return Response(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request: Request):
         queryset = (
@@ -68,9 +70,11 @@ class MailingListStatViewSet(ViewSet):
                 .values()
         )
         count_mailinglist = MailingList.objects.all().count()
+        serializer = MailingListStatSerializer(queryset, many=True)
+
         data = {
-            "mailinglist_stats": queryset,
+            "mailinglist_stats": serializer.data,
             "count_mailinglist": count_mailinglist
         }
 
-        return Response(data)
+        return Response(data, status=status.HTTP_200_OK)

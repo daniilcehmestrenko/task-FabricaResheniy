@@ -14,6 +14,7 @@ from .serializers import (
 from .models import MailingList, Client
 from .service import MailingListService
 
+
 class MailingListViewSet(ModelViewSet):
     serializer_class = MailingListSerializer
     queryset = MailingList.objects.all()

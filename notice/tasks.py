@@ -3,12 +3,16 @@ from django.db.models import Q
 from concurrent.futures import ThreadPoolExecutor
 from celery import shared_task
 
+from .exceptions import MailinglistTimeOutException
 from .models import MailingList, Client, Message
-from .utils import send_message
+from .utils import send_message, CircuitBreaker
 
 
 @shared_task
 def start_mailinglist(pk: int):
+    '''
+    Задача заускает рассылку
+    '''
     mailinglist = MailingList.objects.filter(pk=pk).first()
     if mailinglist:
         messages = list()
@@ -22,13 +26,22 @@ def start_mailinglist(pk: int):
                     'text': mailinglist.text,
                     'id': client.pk,
                     'mailinglist_pk': mailinglist.pk,
-                    'dttm_end': mailinglist.dttm_end
+                    'dttm_end': mailinglist.dttm_end,
+                    'timeout': 0.5
                 }
                 for client in clients
             ]
-            results = pool.map(send_message, data)
+            circuit_breaker = CircuitBreaker(
+                callback=send_message,
+                max_fail=3,
+                reset_interval=5.0,
+                time_window=0.1
+            )
+            results = pool.map(circuit_breaker.request, data)
             for result in results:
-                if result:
+                if isinstance(result, MailinglistTimeOutException):
+                    break
+                elif isinstance(result, Message):
                     messages.append(result)
 
         Message.objects.bulk_create(messages)

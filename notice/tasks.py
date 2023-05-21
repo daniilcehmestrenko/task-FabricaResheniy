@@ -22,9 +22,9 @@ def start_mailinglist(pk: int):
         with ThreadPoolExecutor() as pool:
             data = [
                 {
-                    'phone': client.phone,
+                    'client_phone': client.phone,
                     'text': mailinglist.text,
-                    'id': client.pk,
+                    'client_pk': client.pk,
                     'mailinglist_pk': mailinglist.pk,
                     'dttm_end': mailinglist.dttm_end,
                     'timeout': 0.5

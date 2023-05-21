@@ -16,6 +16,19 @@ from .models import MailingList, Client
 from .service import MailingListService
 
 
+class MailingListStartViewSet(ViewSet):
+
+    @transaction.non_atomic_requests
+    def retrieve(self, request: Request, pk: int):
+        message = 'Mailing not found'
+        service = MailingListService()
+        status_run = service.start(pk)
+
+        if status_run:
+            message = 'Mailinglist launched'
+            
+        return Response({"message": message}, status=status.HTTP_200_OK)
+
 class MailingListViewSet(ModelViewSet):
     serializer_class = MailingListSerializer
     queryset = MailingList.objects.all()

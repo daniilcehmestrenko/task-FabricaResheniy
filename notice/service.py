@@ -7,6 +7,15 @@ from .models import MailingList
 
 
 class MailingListService:
+    def start(self, pk: int):
+        mailinglist = self.__get_mailinglist(pk)
+
+        if mailinglist:
+            start_mailinglist.delay(pk)
+            return True
+        else:
+            return False
+
     def start_or_delay(self, pk: int):
         mailinglist = self.__get_mailinglist(pk)
 

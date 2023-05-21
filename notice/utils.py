@@ -10,7 +10,6 @@ from typing import Callable
 from .exceptions import (
     MailinglistTimeOutException,
     StatusResponseException,
-    CircuitBreakerException
 )
 from .models import Message
 
@@ -20,14 +19,15 @@ def send_message(data: dict) -> Message | None:
     HEADERS: dict[str, str] = {"Authorization": "Bearer " + settings.TOKEN}
 
     dttm_end = data.get('dttm_end')
+    client_id = data.get('client_pk')
     json = {
-        "id": data.get('id'),
-        "phone": data.get('phone'),
+        "id": client_id,
+        "phone": data.get('client_phone'),
         "text": data.get('text')
     }
     if timezone.now() < dttm_end:
         response = requests.post(
-            url=f'{URL_SEND_API}/send/{data.get("id")}',
+            url=f'{URL_SEND_API}/send/{client_id}',
             headers=HEADERS,
             json=json,
             timeout=data.get('timeout')
@@ -38,7 +38,7 @@ def send_message(data: dict) -> Message | None:
             return Message(
                 status=status_answer,
                 mailinglist_id=data.get('mailinglist_pk'),
-                client_id=data.get('id')
+                client_id=client_id
             )
         else:
             raise StatusResponseException
@@ -47,6 +47,10 @@ def send_message(data: dict) -> Message | None:
 
 
 class CircuitBreaker:
+    '''
+    Этот класс прерыватель предотвращает запуск запросов,
+    если удаленный сервис недоступен
+    '''
     def __init__(self, callback: Callable[[dict], Message | Exception],
                  time_window: float,
                  max_fail: int,
@@ -68,7 +72,8 @@ class CircuitBreaker:
                 self.__reset()
                 return self.__do_request(*args, **kwargs)
             else:
-                return CircuitBreakerException()
+                # цепь замкнута и запросы не посылаются
+                return self.__create_fail_message(*args, **kwargs)
         else:
             if self.last_fail_time and timezone.now() > self.last_fail_time \
                     + timezone.timedelta(seconds=self.time_window):
@@ -97,7 +102,7 @@ class CircuitBreaker:
             if self.last_fail_time is None:
                 self.last_fail_time = timezone.now()
 
-            return Timeout()
+            return self.__create_fail_message(*args, **kwargs)
 
         except MailinglistTimeOutException:
             return MailinglistTimeOutException()
@@ -107,4 +112,12 @@ class CircuitBreaker:
             if self.last_fail_time is None:
                 self.last_fail_time = timezone.now()
 
-            return StatusResponseException()
+            return self.__create_fail_message(*args, **kwargs)
+
+    def __create_fail_message(self, *args, **kwargs) -> Message:
+        data = args[0]
+        return Message(
+            status=False,
+            client_id=data.get('client_pk'),
+            mailinglist_id=data.get('mailinglist_pk')
+        )
